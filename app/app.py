@@ -2,203 +2,162 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 from pathlib import Path
-import os
-import sys
-
-ROOT_DIR = os.path.dirname(
-    os.path.dirname(
-        os.path.abspath(__file__)
-    )
-)
-
-sys.path.append(ROOT_DIR)
-
 from main import main
+
 # -----------------------------
-# PAGE CONFIG
+# CONFIG
 # -----------------------------
 st.set_page_config(
-    page_title="Sales Dashboard",
-    page_icon="📊",
+    page_title="Sales Analytics Pro",
     layout="wide"
 )
 
 # -----------------------------
-# PROJECT PATH
+# PATH SETUP
 # -----------------------------
 ROOT_DIR = Path(__file__).resolve().parents[1]
 OUTPUT_DIR = ROOT_DIR / "output"
 
 # -----------------------------
-# AUTO GENERATE DATA
+# REFRESH PIPELINE BUTTON
+# -----------------------------
+if st.sidebar.button("🔄 Refresh Data Pipeline"):
+    with st.spinner("Running ETL pipeline..."):
+        main()
+    st.success("Data refreshed successfully!")
+
+# -----------------------------
+# AUTO RUN IF FILES MISSING
 # -----------------------------
 required_files = [
-    "revenue_by_date.csv",
-    "revenue_by_product.csv",
-    "customer_sales.csv"
+    OUTPUT_DIR / "revenue_by_date.csv",
+    OUTPUT_DIR / "revenue_by_product.csv",
+    OUTPUT_DIR / "customer_sales.csv"
 ]
 
-missing_files = any(
-    not (OUTPUT_DIR / file).exists()
-    for file in required_files
-)
-
-if missing_files:
-    with st.spinner(
-            "Generating analytics data..."
-    ):
+if not all(f.exists() for f in required_files):
+    with st.spinner("Generating data..."):
         main()
-
-# -----------------------------
-# CACHE DATA LOADING
-# -----------------------------
-@st.cache_data
-def load_csv(filename):
-    file_path = OUTPUT_DIR / filename
-
-    if file_path.exists():
-        return pd.read_csv(file_path)
-
-    st.error(
-        f"Missing file: {file_path}"
-    )
-    st.stop()
-
 
 # -----------------------------
 # LOAD DATA
 # -----------------------------
-revenue_by_date = load_csv(
-    "revenue_by_date.csv"
-)
+@st.cache_data
+def load_data(file_name):
+    return pd.read_csv(OUTPUT_DIR / file_name)
 
-revenue_by_product = load_csv(
-    "revenue_by_product.csv"
-)
+revenue_by_date = load_data("revenue_by_date.csv")
+revenue_by_product = load_data("revenue_by_product.csv")
+customer_sales = load_data("customer_sales.csv")
 
-customer_sales = load_csv(
-    "customer_sales.csv"
-)
+# Convert date
+revenue_by_date["date"] = pd.to_datetime(revenue_by_date["date"])
 
 # -----------------------------
 # SIDEBAR FILTERS
 # -----------------------------
-st.sidebar.header("📌 Filters")
+st.sidebar.header("Filters")
 
+# Product filter
+products = revenue_by_product["product"].unique()
 selected_products = st.sidebar.multiselect(
     "Select Product",
-    options=revenue_by_product[
-        "product"
-    ].unique(),
-    default=revenue_by_product[
-        "product"
-    ].unique()
+    options=products,
+    default=products
 )
 
-# -----------------------------
-# FILTER DATA
-# -----------------------------
-filtered_products = revenue_by_product[
-    revenue_by_product[
-        "product"
-    ].isin(selected_products)
+# Date filter
+min_date = revenue_by_date["date"].min()
+max_date = revenue_by_date["date"].max()
+
+date_range = st.sidebar.date_input(
+    "Select Date Range",
+    [min_date, max_date]
+)
+
+# Apply filters
+filtered_product = revenue_by_product[
+    revenue_by_product["product"].isin(selected_products)
+]
+
+filtered_date = revenue_by_date[
+    (revenue_by_date["date"] >= pd.to_datetime(date_range[0])) &
+    (revenue_by_date["date"] <= pd.to_datetime(date_range[1]))
 ]
 
 # -----------------------------
-# DASHBOARD TITLE
+# TITLE
 # -----------------------------
-st.title(
-    "📊 Sales Analytics Dashboard"
-)
-
-st.markdown(
-    """
-    Production-grade sales analytics dashboard  
-    powered by **Python, SQLite, Streamlit & Plotly**
-    """
-)
+st.title("📊 Sales Analytics PRO Dashboard")
 
 # -----------------------------
-# KPI SECTION
+# KPI CALCULATION
 # -----------------------------
-st.header("📌 Key Metrics")
+total_revenue = filtered_product["total_sales"].sum()
 
-total_revenue = filtered_products[
-    "total_sales"
-].sum()
+prev_revenue = revenue_by_product["total_sales"].sum()
+growth = ((total_revenue - prev_revenue) / prev_revenue) * 100 if prev_revenue else 0
 
-total_products = filtered_products[
-    "product"
-].nunique()
-
-total_customers = customer_sales[
-    "customer_id"
-].nunique()
+# -----------------------------
+# KPI UI
+# -----------------------------
+st.header("Key Performance Indicators")
 
 col1, col2, col3 = st.columns(3)
 
-col1.metric(
-    "💰 Total Revenue",
-    f"₹ {total_revenue:.2f}"
-)
+col1.metric("💰 Revenue", f"₹ {total_revenue:,.2f}", f"{growth:.2f}%")
 
-col2.metric(
-    "📦 Products",
-    total_products
-)
+col2.metric("📦 Products", filtered_product["product"].nunique())
 
-col3.metric(
-    "👤 Customers",
-    total_customers
+col3.metric("👤 Customers", customer_sales["customer_id"].nunique())
+
+# -----------------------------
+# DOWNLOAD REPORT
+# -----------------------------
+csv = filtered_product.to_csv(index=False)
+
+st.download_button(
+    label="📥 Download Product Report",
+    data=csv,
+    file_name="product_report.csv",
+    mime="text/csv"
 )
 
 # -----------------------------
-# REVENUE OVER TIME
+# CHARTS
 # -----------------------------
-st.header("📈 Revenue Over Time")
-
-fig_line = px.line(
-    revenue_by_date,
-    x="date",
-    y="total_sales",
-    title="Revenue Over Time"
-)
+st.header("Revenue Over Time")
 
 st.plotly_chart(
-    fig_line,
+    px.line(
+        filtered_date,
+        x="date",
+        y="total_sales",
+        title="Revenue Trend"
+    ),
     use_container_width=True
 )
 
-# -----------------------------
-# PRODUCT REVENUE
-# -----------------------------
-st.header("🏆 Product Revenue")
-
-fig_product = px.bar(
-    filtered_products,
-    x="product",
-    y="total_sales",
-    title="Revenue by Product"
-)
+st.header("Product Performance")
 
 st.plotly_chart(
-    fig_product,
+    px.bar(
+        filtered_product,
+        x="product",
+        y="total_sales",
+        title="Revenue by Product"
+    ),
     use_container_width=True
 )
 
-# -----------------------------
-# CUSTOMER SALES
-# -----------------------------
-st.header("👤 Customer Sales")
-
-fig_customer = px.bar(
-    customer_sales,
-    x="customer_id",
-    y="total_sales",
-    title="Customer Sales"
-)
+st.header("Customer Analysis")
 
 st.plotly_chart(
-    fig_customer,
+    px.bar(
+        customer_sales,
+        x="customer_id",
+        y="total_sales",
+        title="Customer Spending"
+    ),
     use_container_width=True
 )
