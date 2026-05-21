@@ -2,6 +2,17 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 from pathlib import Path
+import os
+import sys
+
+ROOT_DIR = os.path.dirname(
+    os.path.dirname(
+        os.path.abspath(__file__)
+    )
+)
+
+sys.path.append(ROOT_DIR)
+
 from main import main
 # -----------------------------
 # PAGE CONFIG
@@ -13,20 +24,30 @@ st.set_page_config(
 )
 
 # -----------------------------
-# PATH CONFIG
+# PROJECT PATH
 # -----------------------------
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent
 OUTPUT_DIR = BASE_DIR / "output"
+
 # -----------------------------
 # AUTO GENERATE DATA
 # -----------------------------
-if not OUTPUT_DIR.exists():
-    main()
+required_files = [
+    "revenue_by_date.csv",
+    "revenue_by_product.csv",
+    "customer_sales.csv"
+]
 
-if not (
-    OUTPUT_DIR / "revenue_by_date.csv"
-).exists():
-    main()
+missing_files = any(
+    not (OUTPUT_DIR / file).exists()
+    for file in required_files
+)
+
+if missing_files:
+    with st.spinner(
+            "Generating analytics data..."
+    ):
+        main()
 
 # -----------------------------
 # CACHE DATA LOADING
@@ -39,7 +60,7 @@ def load_csv(filename):
         return pd.read_csv(file_path)
 
     st.error(
-        f"Missing file: {file_path}\nRun main.py first."
+        f"Missing file: {file_path}"
     )
     st.stop()
 
@@ -84,14 +105,17 @@ filtered_products = revenue_by_product[
 ]
 
 # -----------------------------
-# DASHBOARD HEADER
+# DASHBOARD TITLE
 # -----------------------------
 st.title(
     "📊 Sales Analytics Dashboard"
 )
 
 st.markdown(
-    "Production-grade analytics dashboard"
+    """
+    Production-grade sales analytics dashboard  
+    powered by **Python, SQLite, Streamlit & Plotly**
+    """
 )
 
 # -----------------------------
