@@ -5,7 +5,6 @@ env/
 
 database/
 logs/
-output/
 
 .idea/
 .vscode/
