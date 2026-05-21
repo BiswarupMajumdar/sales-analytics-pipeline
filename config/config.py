@@ -1,5 +1,19 @@
-DATA_PATH = "data/sales.txt"
+from pathlib import Path
 
-DB_PATH = "database/sales.db"
+# -----------------------------
+# PROJECT ROOT
+# -----------------------------
+BASE_DIR = Path(__file__).resolve().parent.parent
 
-OUTPUT_DIR = "output"
+# -----------------------------
+# PATHS
+# -----------------------------
+DATA_PATH = BASE_DIR / "data" / "sales.txt"
+
+OUTPUT_DIR = BASE_DIR / "output"
+
+DATABASE_PATH = (
+    BASE_DIR
+    / "database"
+    / "sales.db"
+)

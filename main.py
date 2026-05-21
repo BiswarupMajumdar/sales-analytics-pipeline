@@ -55,6 +55,7 @@ def main():
         OUTPUT_DIR,
         exist_ok=True
     )
+    print("Saving to:", OUTPUT_DIR)
 
     with open(
             f"{OUTPUT_DIR}/report.json",
