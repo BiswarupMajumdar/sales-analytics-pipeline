@@ -27,6 +27,7 @@ st.set_page_config(
 # PROJECT PATH
 # -----------------------------
 BASE_DIR = Path(__file__).resolve().parent.parent
+st.write(BASE_DIR)
 OUTPUT_DIR = BASE_DIR / "output"
 
 # -----------------------------
