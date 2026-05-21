@@ -1,190 +1,162 @@
-# 📊 Sales Analytics Pipeline Dashboard
 
-A **production-style Sales Analytics System** built using **Python, SQLite, Pandas, Streamlit, and Plotly** to automate data ingestion, transformation, analysis, and visualization.
+# 📊 Sales Analytics Pipeline & Dashboard
 
-This project simulates a real-world **data analytics workflow** — from raw sales data processing to an interactive business intelligence dashboard.
-
----
-
-## 🚀 Project Highlights
-
-✅ End-to-End **ETL Pipeline**  
-✅ Automated **Data Cleaning & Transformation**  
-✅ **SQLite Database Integration**  
-✅ Business KPI & Revenue Analysis  
-✅ Interactive **Streamlit Dashboard**  
-✅ Dynamic Product Filters  
-✅ Interactive **Plotly Visualizations**  
-✅ Logging & Modular Project Architecture  
-✅ Production-Ready Folder Structure
+A production-style **ETL pipeline + interactive dashboard** built using Python, Streamlit, SQLite, and Plotly.
+This project demonstrates end-to-end data engineering workflow: from raw data ingestion to business insights visualization.
 
 ---
 
-## 🏗️ System Architecture
+## 🚀 Live Demo
+https://sales-analytics-pipeline-complete.streamlit.app/
 
-```text
-Raw TXT Data
-      ↓
-   Extraction
-      ↓
-Data Cleaning & Transformation
-      ↓
-   SQLite Database
-      ↓
- Business Analytics
-      ↓
- CSV / JSON Outputs
-      ↓
- Streamlit Dashboard
+---
+
+## 📌 Project Overview
+
+This project simulates a real-world **sales analytics system**:
+
+* Extracts raw sales data from a `.txt` file
+* Cleans and transforms data using Python (Pandas)
+* Loads data into SQLite database
+* Generates business reports (CSV + JSON)
+* Displays insights using an interactive Streamlit dashboard
+
+---
+
+## ⚙️ Tech Stack
+
+* 🐍 Python
+* 📊 Pandas
+* 🗄 SQLite3
+* 📈 Plotly
+* 🌐 Streamlit
+* 📂 OS / Pathlib
+
+---
+
+## 📁 Project Structure
+
 ```
-
----
-
-## 📌 Key Features
-
-### 🔹 ETL Pipeline
-- Reads raw sales data from `.txt` file
-- Handles missing values & duplicates
-- Converts incorrect datatypes
-- Generates derived metrics like `total_sales`
-
-### 🔹 Business Analytics
-Provides insights such as:
-
-- 💰 Total Revenue
-- 🏆 Top Selling Products
-- 👤 Customer Spending Analysis
-- 📈 Revenue Trends Over Time
-
-### 🔹 Interactive Dashboard
-- KPI Cards
-- Revenue Trend Analysis
-- Product-wise Sales Visualization
-- Customer Sales Insights
-- Sidebar Product Filters
-- Interactive Plotly Charts
-
----
-
-## 🛠️ Tech Stack
-
-| Technology | Purpose |
-|------------|---------|
-| Python | Backend Logic |
-| Pandas | Data Processing |
-| SQLite | Database |
-| Streamlit | Dashboard UI |
-| Plotly | Interactive Charts |
-| JSON / CSV | Output Reports |
-
----
-
-## 📂 Project Structure
-
-```text
-sales_project/
+sales-analytics-pipeline/
 │
-├── app/
-│   └── app.py
-│
-├── etl/
-│   ├── extract.py
-│   ├── transform.py
-│   └── load.py
-│
-├── analytics/
-│   └── analysis.py
-│
-├── db/
-│   └── database.py
-│
-├── config/
-│   └── config.py
-│
-├── utils/
-│   └── logger.py
-│
-├── data/
-│   └── sales.txt
-│
-├── output/
-├── logs/
-├── database/
-│
-├── main.py
+├── app/                  # Streamlit dashboard
+├── etl/                  # Extract, Transform, Load scripts
+├── analytics/           # Business logic & reporting
+├── db/                   # Database connection
+├── config/              # Configuration settings
+├── utils/               # Logging utilities
+├── data/                # Raw input data (sales.txt)
+├── output/              # Generated reports (CSV, JSON)
+├── main.py              # ETL pipeline entry point
 ├── requirements.txt
-├── README.md
-└── .gitignore
+└── README.md
 ```
 
 ---
 
-## ⚙️ Installation & Setup
+## 🔄 ETL Pipeline Flow
 
-### 1️⃣ Clone Repository
+1. **Extract**
+
+   * Reads raw sales data from `sales.txt`
+
+2. **Transform**
+
+   * Cleans missing values
+   * Removes duplicates
+   * Creates calculated fields (e.g., total sales)
+
+3. **Load**
+
+   * Stores processed data into SQLite database
+
+4. **Analytics**
+
+   * Generates:
+
+     * Revenue by date
+     * Revenue by product
+     * Customer analysis report
+
+---
+
+## 📊 Dashboard Features
+
+* 📈 Revenue trend over time
+* 🏆 Top performing products
+* 👤 Customer purchase analysis
+* 📌 KPI metrics (Revenue, Products, Customers)
+* 🎯 Interactive filters (products, date range)
+* 📥 Downloadable reports (CSV export)
+* 🔄 Refresh pipeline button (run ETL from UI)
+
+---
+
+## 🧠 Key Learnings
+
+This project demonstrates:
+
+* ETL pipeline design (real-world data engineering flow)
+* Modular Python project structure
+* SQL database integration with Python
+* Data visualization using Plotly
+* Interactive dashboard development using Streamlit
+* Handling deployment issues in cloud environments
+
+---
+
+## ▶️ How to Run Locally
 
 ```bash
-git clone <your-repo-url>
-cd sales_project
-```
+# Clone repository
+git clone https://github.com/your-username/sales-analytics-pipeline.git
 
-### 2️⃣ Install Dependencies
+# Move into directory
+cd sales-analytics-pipeline
 
-```bash
+# Install dependencies
 pip install -r requirements.txt
-```
 
-### 3️⃣ Run ETL Pipeline
-
-```bash
+# Run ETL pipeline (optional)
 python main.py
-```
 
-### 4️⃣ Launch Dashboard
-
-```bash
+# Launch Streamlit app
 streamlit run app/app.py
 ```
 
 ---
 
-## 📊 Dashboard Preview
+## ☁️ Deployment
 
-_Add screenshots here after deployment_
+This project is deployed on **Streamlit Cloud**.
 
-### Example:
-- KPI Overview
-- Revenue Trends
-- Product Sales Analysis
-- Customer Insights
+To deploy:
 
----
+1. Push code to GitHub
+2. Connect repo to Streamlit Cloud
+3. Set main file:
 
-## 📈 Sample Business Insights
-
-✔ Identify top-performing products  
-✔ Monitor revenue trends over time  
-✔ Analyze customer purchase behavior  
-✔ Generate analytics-ready datasets
+   ```
+   app/app.py
+   ```
 
 ---
 
-## 🌟 Future Improvements
+## 📌 Future Improvements
 
-- [ ] Date Range Filters  
-- [ ] Customer-Level Filtering  
-- [ ] PostgreSQL Integration  
-- [ ] Cloud Deployment  
-- [ ] Real-Time Data Refresh  
-- [ ] Authentication System
+* Move from CSV → fully database-driven dashboard
+* Add authentication system
+* Dockerize application
+* Deploy backend using FastAPI
+* Add real-time data ingestion
 
 ---
 
 ## 👨‍💻 Author
 
-**Biswarup Majumdar**  
-B.Tech in Information Technology | Data Science & Software Development Enthusiast
+**Biswarup Majumdar**
+
+* Data Science | Python | SQL | Power BI
+* Passionate about building real-world data engineering systems
 
 ---
-
-### ⭐ If you found this project useful, consider giving it a star!
