@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 from pathlib import Path
-
+from main import main
 # -----------------------------
 # PAGE CONFIG
 # -----------------------------
@@ -17,6 +17,16 @@ st.set_page_config(
 # -----------------------------
 BASE_DIR = Path(__file__).resolve().parent.parent
 OUTPUT_DIR = BASE_DIR / "output"
+# -----------------------------
+# AUTO GENERATE DATA
+# -----------------------------
+if not OUTPUT_DIR.exists():
+    main()
+
+if not (
+    OUTPUT_DIR / "revenue_by_date.csv"
+).exists():
+    main()
 
 # -----------------------------
 # CACHE DATA LOADING
